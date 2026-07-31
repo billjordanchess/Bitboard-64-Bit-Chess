@@ -290,10 +290,10 @@ static int ParseMove(string s)
 	to = s[2] - 'a';
 	to += ((s[3] - '0') - 1) * 8;
 
-	if (s.length() > 4)
-	{
-		for (i = 0; i < first_move[1]; ++i)
-			if (move_list[i].from == from && move_list[i].to == to)
+	for (i = 0; i < first_move[1]; ++i)
+		if (move_list[i].from == from && move_list[i].to == to)
+		{
+			if (s.length() > 4)
 			{
 				if (s[4] == 'n' || s[4] == 'N')
 					move_list[i].flags |= PROMOTE_KNIGHT;
@@ -301,9 +301,9 @@ static int ParseMove(string s)
 					move_list[i].flags |= PROMOTE_BISHOP;
 				else if (s[4] == 'r' || s[4] == 'R')
 					move_list[i].flags |= PROMOTE_ROOK;
-				return i;
 			}
-	}
+			return i;
+		}
 	return -1;
 }
 
