@@ -1,7 +1,7 @@
 #include <setjmp.h>
 #include <assert.h>
 
-#include "globals.h"//29/10/26
+#include "globals.h"
 
 move_data refute[MAX_PLY];
 static void SetRefuteMove(const int from, const int to);
