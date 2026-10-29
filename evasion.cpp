@@ -1,4 +1,4 @@
-#include "globals.h"//29/10/26
+#include "globals.h"
 
 void Evasion(const int s, const int xs, const int checker);
 void CaptureChecker(const int s, const int xs, const int to, const int king);
