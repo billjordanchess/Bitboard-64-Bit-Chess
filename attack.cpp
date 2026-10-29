@@ -1,4 +1,4 @@
-#include "globals.h"//29/10/26
+#include "globals.h"
 
 int LowestAttacker(const int s, const int xs, const int sq, const BITBOARD occ);
 bool Attack2(const int s, const int sq, const BITBOARD occ);
