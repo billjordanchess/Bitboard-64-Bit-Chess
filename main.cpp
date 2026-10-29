@@ -10,7 +10,7 @@
 #include <fstream>
 #include <sys/timeb.h>
 
-#include "globals.h"//29/10/26
+#include "globals.h"
 
 extern move_data root_move;
 
