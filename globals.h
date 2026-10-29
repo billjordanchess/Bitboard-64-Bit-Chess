@@ -1,4 +1,4 @@
-#include <memory.h>
+#include <memory.h>//29/10/26
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,9 +6,13 @@
 #include <string.h>
 #include <dos.h>
 #include <time.h>
+#include <assert.h>
 #include <iostream>
 
+using namespace std;
+
 void ShowAll(int ply);//
+void z();
 
 #define BITBOARD unsigned __int64 
 #define U64 unsigned __int64
@@ -57,8 +61,8 @@ const int MAX_PLY = 64;
 const int MOVE_STACK = 4000;
 const int GAME_STACK = 2000;
 
-const int HASH_SCORE = 100000000;
-const int CAPTURE_SCORE = 10000000;
+const int HASH_SCORE = 3000000;
+const int CAPTURE_SCORE = 2000000;
 
 constexpr int CASTLE_G1 = 1;
 constexpr int CASTLE_C1 = 2;
@@ -71,7 +75,6 @@ struct move_data {
 	unsigned int flags;
 	int score;
 };
-
 
 struct game_data {
 	int from;
@@ -212,7 +215,7 @@ void AddKey(const int, const int, const int);
 BITBOARD GetKey();
 BITBOARD GetLock();
 void Free();
-void AddHash(const int s, const move_data m);
+void AddHash(const int s, const move_data m, const int);
 bool LookUp(const int s);
 
 //main.cpp

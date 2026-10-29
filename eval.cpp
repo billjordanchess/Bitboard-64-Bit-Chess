@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//29/10/26
 
 constexpr int ISOLATED = 20;
 
@@ -102,7 +102,7 @@ int Eval()
 			score[x] += king_endgame[x][NextBit(bit_pieces[x][K])];
 		else
 		{
-			score[x] += square_score[x][K][NextBit(bit_pieces[x][K])];//
+			score[x] += square_score[x][K][NextBit(bit_pieces[x][K])];
 			if (bit_pieces[x][K] & mask_kingside)
 				score[x] += kingside_pawns[x];
 			else if (bit_pieces[x][K] & mask_queenside)

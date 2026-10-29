@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//29/10/26
 
 extern move_data root_move;
 
@@ -37,12 +37,11 @@ int bb[64], bc[64];
 
 int Book()
 {
-	if (hply > 5)
+	if (hply > 8)
 		return 0;
-	int r;
 	root_move = {};
 	root_move.from = -1;
-	r = Random(100);
+	int r = Random(100);
 	if (hply == 0)
 	{
 		if (r < 50)
@@ -99,7 +98,6 @@ int Book()
 			matches[m][1] = to;
 			m++;
 		}
-
 	}
 
 	if (m == 0)
@@ -121,15 +119,13 @@ unsigned int GetFlags(const int from, const int to)
 		flags |= CAPTURE;
 	if (board[from] == K && abs(to - from) == 2)
 		flags |= CASTLE;
-	if (mask[from] && bit_pieces[side][P])
-		//if (board[from] == P)
+	if (board[from] == P)
 	{
 		if (row[to] == 0 || row[to] == 7)
 			flags |= PROMOTE;
 		if (col[from] != col[to] && board[to] == EMPTY)
 			flags |= EP;
 	}
-
 	return flags;
 }
 

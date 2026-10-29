@@ -10,11 +10,13 @@
 #include <fstream>
 #include <sys/timeb.h>
 
-using namespace std;
-
-#include "globals.h"
+#include "globals.h"//29/10/26
 
 extern move_data root_move;
+
+int GetChecker(const int s, const int sq);
+void Evasion(const int s, const int xs, const int checker);
+void GenCheck(const int s, const int xs);
 
 void ShowHelp();
 void SetUp();
@@ -67,17 +69,17 @@ void SetKingDefences();
 
 int main()
 {
-	std::cout << "Bills 64-Bit Bitboard Chess Engine" << std::endl;
-	std::cout << "Version 2.0, 31/7/26" << std::endl;
-	std::cout << "Bill Jordan 2026" << std::endl;
-	std::cout << "FIDE Master and multiple state champion." << std::endl;
-	std::cout << "I have published a number of chess books" << std::endl;
-	std::cout << "including books on chess programming." << std::endl;
-	std::cout << "My author page at Amazon is at billjordanchess" << std::endl;
-	std::cout << "https://www.amazon.com/-/e/B07F5WSFHZ" << std::endl;
-	std::cout << std::endl;
-	std::cout << "\"help\" displays a list of commands." << std::endl;
-	std::cout << std::endl;
+	cout << "Bills 64-Bit Bitboard Chess Engine" << endl;
+	cout << "Version 2.1, 29/10/26" << endl;
+	cout << "Bill Jordan 2026" << endl;
+	cout << "FIDE Master and multiple state champion." << endl;
+	cout << "I have published a number of chess books" << endl;
+	cout << "including books on chess programming." << endl;
+	cout << "My author page at Amazon is at billjordanchess" << endl;
+	cout << "https://www.amazon.com/-/e/B07F5WSFHZ" << endl;
+	cout << endl;
+	cout << "\"help\" displays a list of commands." << endl;
+	cout << endl;
 
 	string s;
 	string sFen;
@@ -96,7 +98,7 @@ int main()
 	SetCaptureTable();
 	SetUp();
 
-	std::cout << "Engine loaded." << std::endl;
+	cout << "Engine loaded." << endl;
 
 	side = 0;//
 
@@ -110,10 +112,10 @@ int main()
 			currentkey = GetKey();
 			currentlock = GetLock();
 
-			std::cout << std::endl << "Computer's move: ";
-			Alg(root_move.from, root_move.to); std::cout << std::endl;
+			cout << endl << "Computer's move: ";
+			Alg(root_move.from, root_move.to); cout << endl;
 
-			std::cout << "Collisions " << collisions << std::endl;
+			cout << "Collisions " << collisions << endl;
 			collisions = 0;
 
 			MakeMove(root_move);
@@ -121,24 +123,23 @@ int main()
 			SetMaterial();
 
 			t = GetTime() - start_time;
-			std::cout << "Time: " << t;
+			cout << "Time: " << t;
 			if (t > 0)
 				nps = (double)nodes / (double)t;
 			else
 				nps = 0;
 			nps *= 1000.0;
 
-			std::cout << std::endl << "Nodes per second: " << (int)nps << std::endl;
+			cout << endl << "Nodes per second: " << (int)nps << endl;
 			ply = 0;
 
 			first_move[0] = 0;
-			Gen(side, xside);
 			PostResult();
-			std::cout << "Turn " << ++turn << std::endl;
+			cout << "Turn " << ++turn << endl;
 			DisplayBoard();
 			continue;
 		}
-		std::cout << "Enter move or command> ";
+		cout << "Enter move or command> ";
 		cin >> s;
 
 		if (s == "d")
@@ -164,7 +165,7 @@ int main()
 		}
 		if (s == "moves")
 		{
-			std::cout << "Moves" << std::endl;
+			cout << "Moves" << endl;
 			for (int i = 0; i < first_move[1]; ++i)
 			{
 				Alg(move_list[i].from, move_list[i].to);
@@ -189,7 +190,7 @@ int main()
 		}
 		if (s == "quit")
 		{
-			std::cout << "Program exiting" << std::endl;
+			cout << "Program exiting" << endl;
 			break;
 		}
 		if (s == "sb")
@@ -238,7 +239,6 @@ int main()
 			ply = 0;
 			if (first_move[0] != 0)
 				first_move[0] = 0;
-			Gen(side, xside);
 			continue;
 		}
 		if (s == "xboard")
@@ -249,15 +249,15 @@ int main()
 
 		ply = 0;
 		first_move[0] = 0;
-		Gen(side, xside);
+		GenCheck(side, xside);
 		m = ParseMove(s);
 		if (m == -1 || !MakeMove(move_list[m]))
 		{
-			std::cout << "Illegal move." << std::endl;
-			std::cout << s << std::endl;
+			cout << "Illegal move." << endl;
+			cout << s << endl;
 			MoveString(move_list[m].from, move_list[m].to, 0);
 			if (m == -1)
-				std::cout << " m = -1" << std::endl;
+				cout << " m = -1" << endl;
 		}
 		if (game_list[hply].flags & PROMOTE && (row[move_list[m].to] == 0 || row[move_list[m].to] == 7))
 		{
@@ -318,9 +318,9 @@ void DisplayBoard()
 	int c;
 
 	if (flip == 0)
-		std::cout << "\n8";
+		cout << "\n8";
 	else
-		std::cout << "\n1";
+		cout << "\n1";
 
 	for (int j = 0; j < 64; ++j)
 	{
@@ -340,7 +340,7 @@ void DisplayBoard()
 				text = 34;
 			SetConsoleTextAttribute(hConsole, text);
 
-			std::cout << "  ";
+			cout << "  ";
 			SetConsoleTextAttribute(hConsole, 15);
 			break;
 		case 0:
@@ -349,7 +349,7 @@ void DisplayBoard()
 			else
 				text = 46;
 			SetConsoleTextAttribute(hConsole, text);
-			std::cout << " " << piece_char[c][board[i]];
+			cout << " " << piece_char[c][board[i]];
 			SetConsoleTextAttribute(hConsole, 15);
 			break;
 
@@ -359,40 +359,40 @@ void DisplayBoard()
 			else
 				text = 32;
 			SetConsoleTextAttribute(hConsole, text);
-			std::cout << " " << piece_char[c][board[i]];
+			cout << " " << piece_char[c][board[i]];
 			SetConsoleTextAttribute(hConsole, 15);
 			break;
 
 		default:
-			std::cout << " ." << c;
+			cout << " ." << c;
 			break;
 
 		}
 		if ((bit_all & mask[i]) && board[i] == EMPTY)
 			if (x == 0)
-				std::cout << " " << c;
+				cout << " " << c;
 			else
-				std::cout << " ";
+				cout << " ";
 		if (board[i] < 0 || board[i] > 6)
 			if (x == 0)
-				std::cout << " ." << board[i];
+				cout << " ." << board[i];
 			else
-				std::cout << "  " << board[i];
+				cout << "  " << board[i];
 		if (flip == 0)
 		{
 			if ((j + 1) % 8 == 0 && j != 63)
-				std::cout << std::endl << row[i];
+				cout << endl << row[i];
 		}
 		else
 		{
 			if ((j + 1) % 8 == 0 && row[i] != 7)
-				std::cout << std::endl << row[j] + 2;
+				cout << endl << row[j] + 2;
 		}
 	}
 	if (flip == 0)
-		std::cout << "\n\n   a b c d e f g h\n\n";
+		cout << "\n\n   a b c d e f g h\n\n";
 	else
-		std::cout << "\n\n   h g f e d c b a\n\n";
+		cout << "\n\n   h g f e d c b a\n\n";
 }
 
 static void xboard()
@@ -408,7 +408,7 @@ static void xboard()
 	string sText;
 
 	signal(SIGINT, SIG_IGN);
-	std::cout << std::endl;
+	cout << endl;
 	NewGame();
 	fixed_time = 0;
 	computer_side = EMPTY;
@@ -420,19 +420,17 @@ static void xboard()
 		{
 			think();
 			SetMaterial();
-			Gen(side, xside);
 			currentkey = GetKey();
 			currentlock = GetLock();
 
 			move_list[0].from = root_move.from;
 			move_list[0].to = root_move.to;
-			std::cout << "move " << MoveString(root_move.from, root_move.to, 0) << std::endl;
-			std::cout.flush();
+			cout << "move " << MoveString(root_move.from, root_move.to, 0) << endl;
+			cout.flush();
 
 			MakeMove(root_move);
 
 			ply = 0;
-			Gen(side, xside);
 			PostResult();
 			continue;
 		}
@@ -456,7 +454,6 @@ static void xboard()
 		{
 			side = 0;
 			xside = 1;
-			Gen(side, xside);
 			computer_side = 1;
 			continue;
 		}
@@ -464,7 +461,6 @@ static void xboard()
 		{
 			side = 1;
 			xside = 0;
-			Gen(side, xside);
 			computer_side = 0;
 			continue;
 		}
@@ -501,7 +497,7 @@ static void xboard()
 		{
 			int version;
 			cin >> version;
-			std::cout << "feature done=1" << std::endl;
+			cout << "feature done=1" << endl;
 			continue;
 		}
 		if (s == "computer")
@@ -575,7 +571,6 @@ static void xboard()
 			LoadDiagram(fen);
 
 			ply = 0;
-			Gen(side, xside);
 			computer_side = EMPTY;
 			continue;
 		}
@@ -591,8 +586,8 @@ static void xboard()
 			lookup = LookUp(side);
 			if (hash_move.from == 0 && hash_move.to == 0)
 				continue;
-			std::cout << "Hint: " << MoveString(root_move.from, root_move.to, 0) << std::endl;
-			std::cout.flush();
+			cout << "Hint: " << MoveString(root_move.from, root_move.to, 0) << endl;
+			cout.flush();
 			continue;
 		}
 		if (s == "undo")
@@ -601,7 +596,6 @@ static void xboard()
 				continue;
 			UnMakeMove();
 			ply = 0;
-			Gen(side, xside);
 			continue;
 		}
 		if (s == "remove")
@@ -611,26 +605,35 @@ static void xboard()
 			UnMakeMove();
 			UnMakeMove();
 			ply = 0;
-			Gen(side, xside);
 			continue;
 		}
 
 		first_move[0] = 0;
-		Gen(side, xside);
+		GenCheck(side, xside);
 
 		m = ParseMove(s);
 		if (m == -1 || !MakeMove(move_list[m]))
 		{
 			DisplayBoard();
-			std::cout << "Error (unknown command): " << s << std::endl;
+			cout << "Error (unknown command): " << s << endl;
 		}
 		else
 		{
 			ply = 0;
-			Gen(side, xside);
 			PostResult();
 		}
 	}
+}
+
+void GenCheck(const int s, const int xs)
+{
+	const int king = NextBit(bit_pieces[side][K]);
+	int checker = GetChecker(xside, king);
+
+	if (checker == -1)
+		Gen(side, xside);
+	else
+		Evasion(side, xside, checker);
 }
 
 static void PostResult()
@@ -639,7 +642,7 @@ static void PostResult()
 	int flag = 0;
 
 	SetMaterial();
-	Gen(side, xside);
+	GenCheck(side, xside);
 	for (i = 0; i < first_move[1]; ++i)
 		if (MakeMove(move_list[i]))
 		{
@@ -651,7 +654,7 @@ static void PostResult()
 	if (pawn_mat[WHITE] == 0 && pawn_mat[BLACK] == 0 &&
 		piece_mat[WHITE] <= piece_value[N] && piece_mat[BLACK] <= piece_value[N])
 	{
-		std::cout << "1/2-1/2 {Stalemate}" << std::endl;
+		cout << "1/2-1/2 {Stalemate}" << endl;
 		computer_side = EMPTY;
 		return;
 	}
@@ -659,33 +662,33 @@ static void PostResult()
 	{
 		Gen(side, xside);
 		DisplayBoard();
-		std::cout << " end of game ";
+		cout << " end of game ";
 		if (Attack(xside, NextBit(bit_pieces[side][K])))
 		{
 			if (side == 0)
 			{
-				std::cout << "0-1 {BLACK mates}" << std::endl;
-				std::cout << "0-1 {BLACK mates}" << std::endl;
+				cout << "0-1 {BLACK mates}" << endl;
+				cout << "0-1 {BLACK mates}" << endl;
 			}
 			else
 			{
-				std::cout << "1-0 {WHITE mates}" << std::endl;
+				cout << "1-0 {WHITE mates}" << endl;
 			}
 		}
 		else
 		{
-			std::cout << "1/2-1/2 {Stalemate}" << std::endl;
+			cout << "1/2-1/2 {Stalemate}" << endl;
 		}
 		computer_side = EMPTY;
 	}
 	else if (Reps() >= 3)
 	{
-		std::cout << "1/2-1/2 {Draw by repetition}" << std::endl;
+		cout << "1/2-1/2 {Draw by repetition}" << endl;
 		computer_side = EMPTY;
 	}
 	else if (fifty >= 100)
 	{
-		std::cout << "1/2-1/2 {Draw by fifty move rule}" << std::endl;
+		cout << "1/2-1/2 {Draw by fifty move rule}" << endl;
 		computer_side = EMPTY;
 	}
 }
@@ -704,7 +707,7 @@ static int LoadDiagram(string file_name)
 {
 	ifstream file(file_name);
 	if (!file) {
-		cerr << "File not found!" << std::endl;
+		cerr << "File not found!" << endl;
 		return 1;
 	}
 
@@ -794,30 +797,30 @@ static int LoadDiagram(string file_name)
 	Gen(side, xside);
 
 	if (side == 0)
-		std::cout << "WHITE to move" << std::endl;
+		cout << "WHITE to move" << endl;
 	else
-		std::cout << "BLACK to move" << std::endl;
-	std::cout << fen_text << std::endl;
+		cout << "BLACK to move" << endl;
+	cout << fen_text << endl;
 	return 0;
 }
 
 static void ShowHelp()
 {
-	std::cout << "d - Displays the board." << std::endl;
-	std::cout << "f - Flips the board." << std::endl;
-	std::cout << "go - Starts the engine." << std::endl;
-	std::cout << "help - Displays help on the commands." << std::endl;
-	std::cout << "moves - Displays of list of possible moves." << std::endl;
-	std::cout << "new - Starts a new game." << std::endl;
-	std::cout << "off - Turns the computer player off." << std::endl;
-	std::cout << "on or p - The computer plays a move." << std::endl;
-	std::cout << "sb - Loads a fen diagram." << std::endl;
-	std::cout << "sd - Sets the search depth." << std::endl;
-	std::cout << "st - Sets the time limit per move in seconds." << std::endl;
-	std::cout << "sw - Switches sides." << std::endl;
-	std::cout << "quit - Quits the program." << std::endl;
-	std::cout << "undo - Takes back the last move." << std::endl;
-	std::cout << "xboard - Starts xboard." << std::endl;
+	cout << "d - Displays the board." << endl;
+	cout << "f - Flips the board." << endl;
+	cout << "go - Starts the engine." << endl;
+	cout << "help - Displays help on the commands." << endl;
+	cout << "moves - Displays of list of possible moves." << endl;
+	cout << "new - Starts a new game." << endl;
+	cout << "off - Turns the computer player off." << endl;
+	cout << "on or p - The computer plays a move." << endl;
+	cout << "sb - Loads a fen diagram." << endl;
+	cout << "sd - Sets the search depth." << endl;
+	cout << "st - Sets the time limit per move in seconds." << endl;
+	cout << "sw - Switches sides." << endl;
+	cout << "quit - Quits the program." << endl;
+	cout << "undo - Takes back the last move." << endl;
+	cout << "xboard - Starts xboard." << endl;
 }
 
 void SetUp()

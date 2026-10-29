@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//29/10/26
 
 int side, xside;
 int fifty;
@@ -264,7 +264,7 @@ void InitBoard()
 	fifty = 0;
 	castle = 15;
 	ply = 0;
-	hply = 0;
+	hply = 1;
 	first_move[0] = 0;
 	turn = 0;
 }
@@ -299,8 +299,7 @@ void Algebraic(int a)
 	if (a < 0 || a > 63) return;
 	char c[2] = "a";
 	c[0] = 96 + 1 + col[a];
-	//printf("%s%d", c, row[a] + 1);
-	std::cout << c << row[a] + 1;
+	cout << c << row[a] + 1;
 }
 
 /*dont need below here*/
@@ -313,21 +312,21 @@ void ShowAll(int ply)
 	DisplayBoard();
 	memset(done, 0, sizeof(done));
 
-	std::cout << " ply ";
-	std::cout << ply;
-	std::cout << " nodes ";
-	std::cout << nodes;
-	std::cout << " side ";
-	std::cout << side;
-	std::cout << " xside ";
-	std::cout << xside;
-	std::cout << std::endl;
+	cout << " ply ";
+	cout << ply;
+	cout << " nodes ";
+	cout << nodes;
+	cout << " side ";
+	cout << side;
+	cout << " xside ";
+	cout << xside;
+	cout << endl;
 
-	std::cout << " one " << first_move[ply];
-	std::cout << " two " << first_move[ply + 1];
+	cout << " one " << first_move[ply];
+	cout << " two " << first_move[ply + 1];
 	Alg(move_list[first_move[0]].from, move_list[first_move[0]].to);
 
-	std::cout << std::endl;
+	cout << endl;
 
 	int j;
 	for (int i = first_move[ply]; i < first_move[ply + 1]; i++)
@@ -338,14 +337,14 @@ void ShowAll(int ply)
 			//how to display current line?
 			g = &move_list[j];
 			Alg(move_list[j].from, move_list[j].to);
-			std::cout << "\n";
-			std::cout << " ";
-			std::cout << " score ";
-			std::cout << g->score;
-			std::cout << std::endl;
+			cout << "\n";
+			cout << " ";
+			cout << " score ";
+			cout << g->score;
+			cout << endl;
 		}
 	}
-	std::cout << std::endl;
+	cout << endl;
 
 	_getch();
 }

@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//29/10/26
 
 BITBOARD hashkey[2][6][64];
 BITBOARD lock[2][6][64];
@@ -11,15 +11,20 @@ static const BITBOARD HASHSIZE = 5000000;
 
 move_data hash_move;
 
+int hash_depth;
+
 struct hashp 
 {
 	U64 hashlock;
 	int from;
 	int to;
 	int flags;
+	char depth;
 };
 
 hashp* hashpos[2];
+
+int GetHashDepth();
 
 void RandomizeHash()
 {
@@ -46,13 +51,15 @@ void Free()
 	delete[] hashpos[1];
 }
 
-void AddHash(const int s, const move_data m)
+void AddHash(const int s, const move_data m, const int depth)
 {
-	hashp* ptr = &hashpos[s][currentkey];
+	U64 index = currentkey % MAXHASH;
+	hashp* ptr = &hashpos[s][index];
 	ptr->hashlock = currentlock;
 	ptr->from = m.from;
 	ptr->to = m.to;
 	ptr->flags = m.flags;
+	ptr->depth = depth;
 }
 
 void AddKey(const int s, const int piece, const int sq)
@@ -95,7 +102,8 @@ U64 GetKey()
 
 bool LookUp(const int s)
 {
-	if (hashpos[s][currentkey].hashlock != currentlock)
+	U64 index = currentkey % MAXHASH;
+	if (hashpos[s][index].hashlock != currentlock)
 	{
 		collisions++;
 		return false;
@@ -103,6 +111,12 @@ bool LookUp(const int s)
 	hash_move.from = hashpos[s][currentkey].from;
 	hash_move.to = hashpos[s][currentkey].to;
 	hash_move.flags = hashpos[s][currentkey].flags;
+	hash_depth = hashpos[s][currentkey].depth;
 	return true;
+}
+
+int GetHashDepth()
+{
+	return hash_depth;
 }
 

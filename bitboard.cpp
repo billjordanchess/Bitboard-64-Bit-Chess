@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include "globals.h"
+#include "globals.h"//29/10/26
 
 BITBOARD bit_pawncaptures[2][64];
 BITBOARD bit_left[2][64];
@@ -499,7 +499,7 @@ int NextBit(BITBOARD bb)
 
 void PrintBitBoard(BITBOARD bb)
 {
-    std::cout << std::endl;
+    cout << endl;
     int x;
     for (x = 56; x < 64; x++)
         PrintCell(x, bb);
@@ -522,11 +522,11 @@ void PrintBitBoard(BITBOARD bb)
 void PrintCell(int x, BITBOARD bb)
 {
     if (mask[x] & bb)
-        std::cout << " X";
+        cout << " X";
     else
-        std::cout << " -";
+        cout << " -";
     if ((x + 1) % 8 == 0)
-        std::cout << std::endl;
+        cout << endl;
 }
 
 
