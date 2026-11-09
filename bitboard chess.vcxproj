@@ -162,7 +162,6 @@
     <ClCompile Include="attack.cpp" />
     <ClCompile Include="bitboard.cpp" />
     <ClCompile Include="book.cpp" />
-    <ClCompile Include="bounds.cpp" />
     <ClCompile Include="eval.cpp" />
     <ClCompile Include="evasion.cpp" />
     <ClCompile Include="gen.cpp" />
