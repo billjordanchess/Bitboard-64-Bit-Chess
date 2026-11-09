@@ -6,9 +6,11 @@ There are ebook and paperback versions. https://www.amazon.com.au/How-Write-64-B
 
 Google <i>amazon billjordanchess</i> to see my other books on chess programming. 
 
-MS Visual Studio will need to be installed.
-Create a new folder where you want to extract the project.
-Select the Code Button and select <b>Download zip</b>.
-Extract the zip file into the new folder.
-Open the solution file.
-Build and Run
+<ul>
+<li>MS Visual Studio will need to be installed.
+<li>Create a new folder where you want to extract the project.
+<li>Select the Code Button and select <b>Download zip</b>.
+<li>Extract the zip file into the new folder.
+<li>Open the solution file.
+<li>Build and Run
+</ul>
