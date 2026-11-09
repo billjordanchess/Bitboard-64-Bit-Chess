@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
