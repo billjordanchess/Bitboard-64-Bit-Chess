@@ -1,4 +1,4 @@
-#include "globals.h"//10/11/26
+#include "globals.h"
 
 BITBOARD hashkey[2][6][64];
 BITBOARD lock[2][6][64];
