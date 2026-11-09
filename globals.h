@@ -1,4 +1,4 @@
-#include <memory.h>
+#include <memory.h>//29/10/26
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,7 +59,7 @@ const int BLACK = 1;
 
 const int MAX_PLY = 64;
 const int MOVE_STACK = 4000;
-const int GAME_STACK = 2000;
+const int GAME_STACK = 8000;
 
 const int HASH_SCORE = 3000000;
 const int CAPTURE_SCORE = 2000000;
@@ -87,6 +87,7 @@ struct game_data {
 	BITBOARD lock;
 };
 
+extern int usebook;
 extern move_data hash_move;
 
 extern const int piece_value[6];
@@ -121,7 +122,6 @@ extern int first_move[MAX_PLY];
 extern move_data move_list[MOVE_STACK];
 extern game_data game_list[GAME_STACK];
 
-//extern int hash_start,hash_dest;
 extern BITBOARD currentkey, currentlock;
 
 extern int fixed_time;
@@ -139,7 +139,7 @@ extern const int Flip[64];
 
 extern int row2[2][64];
 
-extern BITBOARD bit_after[64][64];
+//extern BITBOARD bit_after[64][64];
 extern BITBOARD bit_between[64][64];
 extern BITBOARD bit_ray_edge[6][64];
 extern BITBOARD bit_beyond[64][64];
