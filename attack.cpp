@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 int LowestAttacker(const int s, const int xs, const int sq, const BITBOARD occ);
 bool Attack2(const int s, const int sq, const BITBOARD occ);
@@ -58,7 +58,6 @@ int LowestAttacker(const int s, const int xs, const int sq, const BITBOARD occ)
         if (!IsPinned(xs, from, king, occ))
             return from;
     }
-
     if (bit_right[xs][sq] & bit_pieces[s][P] & occ)
     {
         int from = pawnright[xs][sq];
@@ -75,7 +74,6 @@ int LowestAttacker(const int s, const int xs, const int sq, const BITBOARD occ)
             return from;
         b1 &= b1 - 1;
     }
-
     for (int piece = B; piece < K; piece++)
     {
         b1 = bit_moves[piece][sq] & bit_pieces[s][piece] & occ;
@@ -99,20 +97,6 @@ int LowestAttacker(const int s, const int xs, const int sq, const BITBOARD occ)
     return -1;
 }
 
-bool IsPinned2(const int s, const int sq, const int to, const int king, const BITBOARD occ)
-{
-    BITBOARD b1 = bit_moves[R][king] & bit_moves[R][sq] & (bit_pieces[s][R] | bit_pieces[s][Q]) & occ;
-    b1 |= (bit_moves[B][king] & bit_moves[B][sq] & (bit_pieces[s][B] | bit_pieces[s][Q])) & occ;
-    while (b1)
-    {
-        int from = NextBit(b1);
-        if (from != to && !(bit_between[from][king] & occ & ~mask[sq]))
-            return true;
-        b1 &= b1 - 1;
-    }
-    return false;
-}
-
 bool IsPinned(const int s, const int sq, const int king, const BITBOARD occ)
 {
     BITBOARD b1 = bit_moves[R][king] & (bit_pieces[s][R] | bit_pieces[s][Q]) & occ;
@@ -121,6 +105,20 @@ bool IsPinned(const int s, const int sq, const int king, const BITBOARD occ)
     {
         int from = NextBit(b1);
         if (!(bit_between[from][king] & occ & ~mask[sq]))
+            return true;
+        b1 &= b1 - 1;
+    }
+    return false;
+}
+
+bool IsPinned2(const int s, const int sq, const int to, const int king, const BITBOARD occ)
+{
+    BITBOARD b1 = bit_moves[R][king] & bit_moves[R][sq] & (bit_pieces[s][R] | bit_pieces[s][Q]) & occ;
+    b1 |= (bit_moves[B][king] & bit_moves[B][sq] & (bit_pieces[s][B] | bit_pieces[s][Q])) & occ;
+    while (b1)
+    {
+        int from = NextBit(b1);
+        if (from != to && !(bit_between[from][king] & occ & ~mask[sq]))
             return true;
         b1 &= b1 - 1;
     }

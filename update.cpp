@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 void UpdatePiece(const int s, const int piece, const int start, const int to);
 void RemovePiece(const int s, const int piece, const int sq);
@@ -58,37 +58,36 @@ int MakeMove(move_data m)
     }
     else
     {
-    if (flags & CASTLE)
-    {
-        if (Attack(xside, from) || Attack(xside, to))
-            return false;
-        if (to == G1)
+        if (flags & CASTLE)
         {
-            if (Attack(xside, F1))
+            if (Attack(xside, from) || Attack(xside, to))
                 return false;
-            UpdatePiece(side, R, H1, F1);
-        }
-        else if (to == C1)
-        {
-            if (Attack(xside, D1))
-                return false;
-            UpdatePiece(side, R, A1, D1);
-        }
-        else if (to == G8)
-        {
-            if (Attack(xside, F8))
-                return false;
-            UpdatePiece(side, R, H8, F8);
-        }
-        else if (to == C8)
-        {
-            if (Attack(xside, D8))
-                return false;
-            UpdatePiece(side, R, A8, D8);
+            if (to == G1)
+            {
+                if (Attack(xside, F1))
+                    return false;
+                UpdatePiece(side, R, H1, F1);
+            }
+            else if (to == C1)
+            {
+                if (Attack(xside, D1))
+                    return false;
+                UpdatePiece(side, R, A1, D1);
+            }
+            else if (to == G8)
+            {
+                if (Attack(xside, F8))
+                    return false;
+                UpdatePiece(side, R, H8, F8);
+            }
+            else if (to == C8)
+            {
+                if (Attack(xside, D8))
+                    return false;
+                UpdatePiece(side, R, A8, D8);
+            }
         }
     }
-}
-
     game_data* g = &game_list[hply];
     g->from = from;
     g->to = to;
@@ -125,7 +124,6 @@ int MakeMove(move_data m)
     {
         UpdatePiece(side, board[from], from, to);
     }
-
     side ^= 1;
     xside ^= 1;
     return true;

@@ -1,7 +1,7 @@
 #include <setjmp.h>
 #include <assert.h>
 
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 move_data refute[MAX_PLY];
 static void SetRefuteMove(const int from, const int to);
@@ -30,7 +30,6 @@ static int currentmax;
 move_data root_move;
 
 int LowestAttacker(const int s, const int xs, const int sq, const BITBOARD occ);
-bool Attack3(const int s, const int sq, const BITBOARD occ);
 bool IsPinned(const int s, const int sq, const int king, const BITBOARD occ);
 bool IsLineAttack(const int s, const int sq, const BITBOARD occ);
 
@@ -40,10 +39,8 @@ void think()
 
     root_move = {};
 
-    if (hply < 8)
+    if (hply < 8 && usebook)
     {
-        if (hply <= 1)
-            LoadBook();
         bookflag = Book();
         if (bookflag > 0)
         {
@@ -129,7 +126,6 @@ static int Search(int alpha, int beta, int depth)
         return CaptureSearch(alpha, beta);
 
     nodes++;
-
     if ((nodes & 4095) == 0 && fixed_depth == 0)
     {
         CheckUp();
@@ -137,8 +133,6 @@ static int Search(int alpha, int beta, int depth)
 
     if (ply > MAX_PLY - 2)
         return Eval();
-
-    int bestscore = -10001;
 
     const int king = NextBit(bit_pieces[side][K]);
     int checker = GetChecker(xside, king);
@@ -148,7 +142,8 @@ static int Search(int alpha, int beta, int depth)
     else
         Evasion(side, xside, checker);
 
-    move_data bestmove = move_list[first_move[ply]];
+    int bestscore = -10001;
+    move_data bestmove = {};
 
     refute[ply + 1].from = 0;
     refute[ply + 1].to = 0;
@@ -171,13 +166,16 @@ static int Search(int alpha, int beta, int depth)
         int to = move_list[i].to;
         int piece = board[from];
         unsigned int flags = move_list[i].flags;
-
+            
         if (depth == 1 && count > 0 && !(flags & (CAPTURE | EP | PROMOTE)))
         {
             int ev = ev1 + square_score[side][piece][to] - square_score[side][piece][from] + frontier[piece];
             if (ev <= alpha)
             {
-                continue;
+                if (!(piece>P && bit_moves[piece][to] & mask[xking] && !(bit_between[to][xking] & bit_all)))
+                {
+                    continue;
+                }
             }
         }
 
@@ -194,7 +192,7 @@ static int Search(int alpha, int beta, int depth)
         else if(depth > 1)
         {
             d = depth - 3;
-            if (flags & (CAPTURE | EP) || count == 1 || checker == 1)// || move_list[i].score==REFUTE_SCORE)
+            if (flags & (CAPTURE | EP) || count == 1 || checker != -1)
             {
                 d = depth - 1;
             }
@@ -239,7 +237,6 @@ static int Search(int alpha, int beta, int depth)
                 }
                 alpha = score;
             }
-            
             if (move_list[i].score == HASH_SCORE)
             {
                 if (depth == 1)
@@ -253,7 +250,7 @@ static int Search(int alpha, int beta, int depth)
     }
     if (count == 0)
     {
-        if (Attack(xside, NextBit(bit_pieces[side][K])))
+        if (Attack(xside, king))
         {
             return -10000 + ply;
         }
@@ -353,9 +350,7 @@ static int ReCaptureSearch(int s, int xs, const int attacker, const int sq)
             break;
         }
         count++;
-
         next = LowestAttacker(s, xs, sq, occ);
-
         if (next > -1)
         {
             score[count + 1] = piece_value[board[next]];
@@ -389,7 +384,7 @@ static int ReCaptureSearch(int s, int xs, const int attacker, const int sq)
 
 static int Reps2()
 {
-    for (int i = hply - 4; i >= 0 && i >= hply - fifty; i -= 2)
+    for (int i = hply - 4; i >= 0 && i >= hply - fifty; i -= 4)
     {
         if (game_list[i].hashkey == currentkey && game_list[i].lock == currentlock)
             return 1;
@@ -416,7 +411,6 @@ static void SelectMove(const int from)
 static void CheckUp()
 {
     if (ply <= 1) return;
-
     if (GetTime() >= stop_time || max_time < 50)
     {
         stop_search = true;

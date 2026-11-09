@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 void z()
 {
@@ -89,7 +89,7 @@ void Gen(const int s, const int xs)
         from = NextBit(b1);
         b1 &= b1 - 1;
         to = pawnleft[s][from];
-        if (row2[side][from] == 6)
+        if (row2[s][from] == 6)
             AddPromoteCapture(from, to);
         else
             AddCapture(from, to);
@@ -99,7 +99,7 @@ void Gen(const int s, const int xs)
         from = NextBit(b2);
         b2 &= b2 - 1;
         to = pawnright[s][from];
-        if (row2[side][from] == 6)
+        if (row2[s][from] == 6)
             AddPromoteCapture(from, to);
         else
             AddCapture(from, to);
@@ -108,10 +108,10 @@ void Gen(const int s, const int xs)
     {
         from = NextBit(b3);
         b3 &= b3 - 1;
-        if (row2[side][from] == 6)
-            AddPromotion(from, pawnplus[side][from], PROMOTE);
+        if (row2[s][from] == 6)
+            AddPromotion(from, pawnplus[s][from], PROMOTE);
         else
-            AddPawnMove(from, pawnplus[side][from]);
+            AddPawnMove(from, pawnplus[s][from]);
         if (row2[s][from] == 1 && board[pawndouble[s][from]] == EMPTY)
         {
             AddPawnMove(from, pawndouble[s][from]);
@@ -143,6 +143,7 @@ void Gen(const int s, const int xs)
     for (int piece = B; piece <= Q; piece++)
     {
         b1 = bit_pieces[s][piece];
+        int slider = piece - 2;
         while (b1)
         {
             score = 0;
@@ -154,14 +155,13 @@ void Gen(const int s, const int xs)
             b1 &= b1 - 1;
             BITBOARD blocked = 0;
 
-            for (int d = 0; d < 7; d++)
+            for (int d = 0; d < 6; d++)
             {
-                BITBOARD layer = bit_rings[piece - 2][from][d] & ~blocked;
+                BITBOARD layer = bit_rings[slider][from][d] & ~blocked;
                 if (layer == 0)
                     break;
 
                 BITBOARD blockers = layer & bit_all;
-
                 while (blockers)
                 {
                     int to = NextBit(blockers);
@@ -294,7 +294,7 @@ void AddPromoteCapture(const int from, const int to)
     int score = piece_value[captured] - 100;
     int defender = GetDefender(side, xside, to, bit_all);
 
-    if (defender == -1)
+    if (defender == EMPTY)
         score += 900;
 
     move_list[move_count].score = score + CAPTURE_SCORE;
@@ -316,20 +316,25 @@ void GenEp(const int s)
 
     if (board[ep] == P && abs(game_list[hply - 1].from - ep) == 16)
     {
-        int from = -1;
         if (col[ep] > 0 && mask[ep - 1] & bit_pieces[s][P])
-            from = ep - 1;
-        else if (col[ep] < 7 && mask[ep + 1] & bit_pieces[s][P])
-            from = ep + 1;
-        if (from > -1)
         {
+            int from = ep - 1;
             int to = pawnplus[s][ep];
             int king = NextBit(bit_pieces[s][K]);
-            if (IsPinned2(s ^ 1, from, to, king, (bit_all & ~mask[from] & ~mask[ep]) | mask[to]))
+            if (!IsPinned2(s ^ 1, from, to, king, (bit_all & ~mask[from] & ~mask[ep]) | mask[to]))
             {
-                return;
+                AddEP(from, to);
             }
-            AddEP(from, to);
+        }            
+        if (col[ep] < 7 && mask[ep + 1] & bit_pieces[s][P])
+        {
+            int from = ep + 1;
+            int to = pawnplus[s][ep];
+            int king = NextBit(bit_pieces[s][K]);
+            if (!IsPinned2(s ^ 1, from, to, king, (bit_all & ~mask[from] & ~mask[ep]) | mask[to]))
+            {
+                AddEP(from, to);
+            }
         }
     }
 }
@@ -413,7 +418,6 @@ void GenCaptures(const int s, const int xs)
                 {
                     AddCapture(from, to);
                 }
-                b2 &= bit_after[from][to];
             }
         }
     }
@@ -453,7 +457,6 @@ void SetCaptureTable()
             for (int defender = 0; defender <= 6; defender++)
             {
                 capture_table[piece][captured][defender] += CAPTURE_SCORE;
-
             }
 }
 
@@ -463,7 +466,6 @@ int GetDefender(const int s, const int xs, const int sq, const BITBOARD occ)
         return P;
     if (bit_right[xs][sq] & bit_pieces[s][P])
         return P;
-
     if (bit_moves[N][sq] & bit_pieces[s][N])
         return N;
     for (int piece = B; piece < K; piece++)

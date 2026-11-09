@@ -1,13 +1,12 @@
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 void Evasion(const int s, const int xs, const int checker);
-void CaptureChecker(const int s, const int xs, const int to, const int king);
+void CaptureChecker(const int s, const int xs, const int to);
 void AddCapture(const int x, const int sq);
 void AddMove(const int x, const int sq, const int flags, const int);
 void AddPromotion(const int from, const int to, const int flags);
 void AddPromoteCapture(const int x, const int sq);
 void GenEp(const int s);
-bool IsPinned(const int s, const int sq, const int king, const BITBOARD occ);
 bool Attack2(const int s, const int sq, const BITBOARD occ);
 int GetChecker(const int s, const int sq);
 
@@ -62,7 +61,7 @@ void Evasion(const int s, const int xs, const int checker)
     {
         if (board[checker] == P)
             GenEp(s);
-        CaptureChecker(s, xs, checker, king);
+        CaptureChecker(s, xs, checker);
     }
     b1 = bit_moves[K][king] & bit_units[xs];
     while (b1)
@@ -80,22 +79,22 @@ void Evasion(const int s, const int xs, const int checker)
         if (!Attack2(xs, to, bit_all & ~mask[king]))
             AddMove(king, to, 0, 0);
     }
-    BITBOARD between = bit_between[checker][king];
-    if (between && checker != DOUBLE_CHECK)
+    if (checker != DOUBLE_CHECK)
     {
-        if (s == 0)
-        {
-            b1 = bit_pieces[s][P] & (between >> 8);
-        }
-        else
-        {
-            b1 = bit_pieces[s][P] & (between << 8);
-        }
-        if (row2[xs][king] == 4)
+        BITBOARD between = bit_between[checker][king];
+        if (between)
         {
             if (s == 0)
             {
-                b2 = bit_pieces[s][P] & (between << 16);
+                b1 = bit_pieces[s][P] & (between >> 8);
+            }
+            else
+            {
+                b1 = bit_pieces[s][P] & (between << 8);
+            }
+            if (s == 0)
+            {
+                b2 = bit_pieces[s][P] & (between >> 16);
             }
             else
             {
@@ -110,46 +109,45 @@ void Evasion(const int s, const int xs, const int checker)
                     AddMove(from, pawndouble[s][from], 0, 0);
                 }
             }
-        }
-        while (b1)
-        {
-            from = NextBit(b1);
-            b1 &= b1 - 1;
-            if (row2[s][from] == 6)
-                AddPromotion(from, pawnplus[s][from], PROMOTE);
-            else
-                AddMove(from, pawnplus[s][from], 0, 0);
-        }
-        b1 = bit_pieces[s][N];
-        while (b1)
-        {
-            from = NextBit(b1);
-            b1 &= b1 - 1;
-            b2 = bit_moves[N][from] & between;
-            while (b2)
-            {
-                to = NextBit(b2);
-                b2 &= b2 - 1;
-                AddMove(from, to, 0, 0);
-            }
-        }
-        for (int piece = B; piece <= Q; piece++)
-        {
-            b1 = bit_pieces[s][piece];
             while (b1)
             {
                 from = NextBit(b1);
                 b1 &= b1 - 1;
-                b2 = bit_moves[piece][from] & between;
+                if (row2[s][from] == 6)
+                    AddPromotion(from, pawnplus[s][from], PROMOTE);
+                else
+                    AddMove(from, pawnplus[s][from], 0, 0);
+            }
+            b1 = bit_pieces[s][N];
+            while (b1)
+            {
+                from = NextBit(b1);
+                b1 &= b1 - 1;
+                b2 = bit_moves[N][from] & between;
                 while (b2)
                 {
                     to = NextBit(b2);
                     b2 &= b2 - 1;
-                    if (!(bit_between[from][to] & bit_all))
+                    AddMove(from, to, 0, 0);
+                }
+            }
+            for (int piece = B; piece <= Q; piece++)
+            {
+                b1 = bit_pieces[s][piece];
+                while (b1)
+                {
+                    from = NextBit(b1);
+                    b1 &= b1 - 1;
+                    b2 = bit_moves[piece][from] & between;
+                    while (b2)
                     {
-                        AddMove(from, to, 0, 0);
+                        to = NextBit(b2);
+                        b2 &= b2 - 1;
+                        if (!(bit_between[from][to] & bit_all))
+                        {
+                            AddMove(from, to, 0, 0);
+                        }
                     }
-                    b2 &= bit_after[from][to];
                 }
             }
         }
@@ -157,7 +155,7 @@ void Evasion(const int s, const int xs, const int checker)
     first_move[ply + 1] = move_count;
 }
 
-void CaptureChecker(const int s, const int xs, const int to, const int king)
+void CaptureChecker(const int s, const int xs, const int to)
 {
     if (bit_left[xs][to] & bit_pieces[s][P])
     {

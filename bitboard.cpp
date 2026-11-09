@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 BITBOARD bit_pawncaptures[2][64];
 BITBOARD bit_left[2][64];
@@ -54,7 +54,7 @@ static void SetBit(BITBOARD& bb, int square);
 static void SetPawnArrays();
 static void SetPawnBits();
 static void SetPassedBits();
-static void SetBitAfter();
+static void SetBitBeyond();
 
 static void SetKnightMoves();
 static void SetLinePieces();
@@ -67,6 +67,13 @@ int NextBit(BITBOARD bb);
 void PrintBitBoard(BITBOARD bb);
 void PrintCell(int x, BITBOARD bb);
 
+int NextBit(BITBOARD bb)
+{
+    unsigned long sq;
+    _BitScanForward64(&sq, bb);   // bb must be non-zero
+    return sq;
+}
+
 static void SetBit(BITBOARD& bb, int square)
 {
     bb |= (1ui64 << square);
@@ -74,20 +81,26 @@ static void SetBit(BITBOARD& bb, int square)
 
 void SetBits()
 {
-    memset(bit_pawncaptures, 0, sizeof(bit_pawncaptures));
-    memset(bit_moves, 0, sizeof(bit_moves));
-
     SetRanks();
     SetMasks();
     SetPawnArrays();
     SetPawnBits();
     SetPassedBits();
     SetBetweenVector();
-    SetBitAfter();
+    SetBitBeyond();
     SetMaskEdges();
     SetMoves();
     SetRayEdges();
     SetBitRings();
+}
+
+static void SetRanks()
+{
+    for (int x = 0; x < 64; x++)
+    {
+        row2[WHITE][x] = row[x];
+        row2[BLACK][x] = 7 - row[x];
+    }
 }
 
 static void SetMasks()
@@ -144,6 +157,7 @@ static void SetPawnArrays()
 
 static void SetPawnBits()
 {
+    memset(bit_pawncaptures, 0, sizeof(bit_pawncaptures));
     for (int x = 0; x < 64; x++)
     {
         if (col[x] > 0)
@@ -203,9 +217,9 @@ static void SetPassedBits()
 
 static void SetBetweenVector()
 {
-    int x, y, z;
-    for (x = 0; x < 64; x++)
-        for (y = 0; y < 64; y++)
+    int z;
+    for (int x = 0; x < 64; x++)
+        for (int y = 0; y < 64; y++)
         {
             if (row[x] == row[y])
             {
@@ -246,65 +260,52 @@ static void SetBetweenVector()
         }
 }
 
-static void SetBitAfter()
+static void SetBitBeyond()
 {
-    int x, y, z;
-    for (x = 0; x < 64; x++)
-        for (y = 0; y < 64; y++)
+    for (int x = 0; x < 64; x++)
+        for (int y = 0; y < 64; y++)
         {
+            bit_beyond[x][y] = 0;
+
             if (x == y)
                 continue;
+
             if (row[x] == row[y])
             {
                 if (y > x)
-                    for (z = y; z <= row[y] * 8 + 7; z++)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y + 1; z <= row[y] * 8 + 7; z++)
+                        SetBit(bit_beyond[x][y], z);
                 else
-                    for (z = y; z >= row[y] * 8; z--)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y - 1; z >= row[y] * 8; z--)
+                        SetBit(bit_beyond[x][y], z);
             }
             if (col[x] == col[y])
             {
                 if (y > x)
-                    for (z = y; z <= 56 + col[y]; z += 8)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y + 8; z <= 56 + col[y]; z += 8)
+                        SetBit(bit_beyond[x][y], z);
                 else
-                    for (z = y; z >= col[y]; z -= 8)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y - 8; z >= col[y]; z -= 8)
+                        SetBit(bit_beyond[x][y], z);
             }
             if (nediag[x] == nediag[y])
             {
                 if (y > x)
-                    for (z = y; z <= GetEdge(x, 7); z += 7)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y + 7; z <= GetEdge(x, 7); z += 7)
+                        SetBit(bit_beyond[x][y], z);
                 else
-                    for (z = y; z >= GetEdge(x, -7); z -= 7)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y - 7; z >= GetEdge(x, -7); z -= 7)
+                        SetBit(bit_beyond[x][y], z);
             }
             if (nwdiag[x] == nwdiag[y])
             {
                 if (y > x)
-                    for (int z = y; z <= GetEdge(x, 9); z += 9)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y + 9; z <= GetEdge(x, 9); z += 9)
+                        SetBit(bit_beyond[x][y], z);
                 else
-                    for (int z = y; z >= GetEdge(x, -9); z -= 9)
-                        SetBit(bit_after[x][y], z);
+                    for (int z = y - 9; z >= GetEdge(x, -9); z -= 9)
+                        SetBit(bit_beyond[x][y], z);
             }
-        }
-    for (int x = 0; x < 64; x++)
-        for (int y = 0; y < 64; y++)
-        {
-            bit_after[x][y] = ~bit_after[x][y];
-        }
-    for (int x = 0; x < 64; x++)
-        for (int y = 0; y < 64; y++)
-        {
-            if (~bit_after[x][y])
-            {
-                bit_beyond[x][y] = ~(bit_after[x][y] ^ mask[y]);
-            }
-            else
-                bit_beyond[x][y] = 0;
         }
 }
 
@@ -322,6 +323,7 @@ static void SetMaskEdges()
 
 static void SetMoves()
 {
+    memset(bit_moves, 0, sizeof(bit_moves));
     SetKnightMoves();
     SetLinePieces();
     SetKingMoves();
@@ -443,15 +445,6 @@ static int GetEdge(int sq, int plus)
     return sq;
 }
 
-static void SetRanks()
-{
-    for (int x = 0; x < 64; x++)
-    {
-        row2[WHITE][x] = row[x];
-        row2[BLACK][x] = 7 - row[x];
-    }
-}
-
 void SetBitRings()
 {
     BITBOARD b3 = 0;
@@ -467,7 +460,6 @@ void SetBitRings()
             b3 |= bit_rings[1][x][d];
         }
     }
-
     for (int x = 0; x < 64; x++)
     {
         BITBOARD b1 = mask[x];
@@ -488,13 +480,6 @@ void SetBitRings()
             bit_rings[2][x][d] = bit_rings[0][x][d] | bit_rings[1][x][d];
         }
     }
-}
-
-int NextBit(BITBOARD bb)
-{
-    unsigned long sq;
-    _BitScanForward64(&sq, bb);   // bb must be non-zero
-    return sq;
 }
 
 void PrintBitBoard(BITBOARD bb)

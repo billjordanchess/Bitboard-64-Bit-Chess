@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globals.h"//10/11/26
 
 int side, xside;
 int fifty;
@@ -264,9 +264,10 @@ void InitBoard()
 	fifty = 0;
 	castle = 15;
 	ply = 0;
-	hply = 1;
+	hply = 0;
 	first_move[0] = 0;
 	turn = 0;
+	usebook = 1;
 }
 
 void NewPosition()
@@ -298,7 +299,7 @@ void Algebraic(int a)
 {
 	if (a < 0 || a > 63) return;
 	char c[2] = "a";
-	c[0] = 96 + 1 + col[a];
+	c[0] = 97 + col[a];
 	cout << c << row[a] + 1;
 }
 
