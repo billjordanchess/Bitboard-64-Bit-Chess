@@ -1,4 +1,4 @@
-#include "globals.h"//10/11/26
+#include "globals.h"
 
 constexpr int ISOLATED = 20;
 
