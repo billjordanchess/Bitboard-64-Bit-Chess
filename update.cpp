@@ -1,4 +1,4 @@
-#include "globals.h"//10/11/26
+#include "globals.h"
 
 void UpdatePiece(const int s, const int piece, const int start, const int to);
 void RemovePiece(const int s, const int piece, const int sq);
