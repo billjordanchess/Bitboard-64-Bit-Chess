@@ -1,4 +1,4 @@
-#include "globals.h"//10/11/26
+#include "globals.h"
 
 extern move_data root_move;
 
