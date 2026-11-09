@@ -200,12 +200,6 @@ int main()
         }
         if (s == "sb")
         {
-            sFen = "c:\\users\\bill\\desktop\\bscp\\";
-            cin >> sText;
-            sFen += sText + ".fen";
-            LoadDiagram(sFen);
-            continue;
-            //
             sFen = "c:\\diagrams\\";//You will need to replace this with the folder you use for your diagrams. 
             cin >> sText;
             sFen += sText + ".fen";
