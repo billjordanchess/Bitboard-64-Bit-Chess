@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include "globals.h"//10/11/26
+#include "globals.h"
 
 BITBOARD bit_pawncaptures[2][64];
 BITBOARD bit_left[2][64];
