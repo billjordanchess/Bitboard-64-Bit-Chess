@@ -12,5 +12,5 @@ Google <i>amazon billjordanchess</i> to see my other books on chess programming.
 <li>Select the Code Button and select <b>Download zip</b>.
 <li>Extract the zip file into the new folder.
 <li>Open the solution file.
-<li>Build and Run
+<li>Build and Run.
 </ul>
